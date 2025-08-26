@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, Menu, X, Phone } from 'lucide-react';
+import { Heart, Menu, X, Phone, User } from 'lucide-react';
 
-const Header = () => {
+interface HeaderProps {
+  onAuthClick?: () => void;
+}
+
+const Header = ({ onAuthClick }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -62,7 +66,7 @@ const Header = () => {
           {/* Contact Button & Mobile Menu */}
           <div className="flex items-center gap-4">
             <a
-              href="tel:+919876543210"
+              href="tel:+918447639569"
               className={`hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl font-semibold transition-all duration-300 ${
                 isScrolled 
                   ? 'bg-blue-600 text-white hover:bg-blue-700' 
@@ -72,6 +76,19 @@ const Header = () => {
               <Phone className="w-4 h-4" />
               <span>Call Now</span>
             </a>
+
+            {/* Login/Register Button */}
+            <button
+              onClick={onAuthClick}
+              className={`hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl font-semibold transition-all duration-300 ${
+                isScrolled 
+                  ? 'bg-green-600 text-white hover:bg-green-700' 
+                  : 'bg-green-600 text-white hover:bg-green-700'
+              }`}
+            >
+              <User className="w-4 h-4" />
+              <span>Login/Register</span>
+            </button>
 
             {/* Mobile menu button */}
             <button
@@ -99,14 +116,24 @@ const Header = () => {
                   {link.name}
                 </a>
               ))}
-              <div className="px-4 py-2">
+              <div className="px-4 py-2 space-y-2">
                 <a
-                  href="tel:+919876543210"
+                  href="tel:+918447639569"
                   className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl font-semibold hover:bg-blue-700 transition-colors duration-300 w-full justify-center"
                 >
                   <Phone className="w-4 h-4" />
                   <span>Call Now</span>
                 </a>
+                <button
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    onAuthClick?.();
+                  }}
+                  className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-xl font-semibold hover:bg-green-700 transition-colors duration-300 w-full justify-center"
+                >
+                  <User className="w-4 h-4" />
+                  <span>Login/Register</span>
+                </button>
               </div>
             </nav>
           </div>

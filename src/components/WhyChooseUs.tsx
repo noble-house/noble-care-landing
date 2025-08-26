@@ -1,5 +1,5 @@
 import React from 'react';
-import { Award, Clock, Blend, FileText } from 'lucide-react';
+import { Award, Clock, Sparkles, FileText } from 'lucide-react';
 
 const WhyChooseUs = () => {
   const features = [
@@ -14,7 +14,7 @@ const WhyChooseUs = () => {
       description: 'Round-the-clock availability with customizable care plans that adapt to your family\'s needs.'
     },
     {
-      icon: Blend,
+      icon: Sparkles,
       title: 'Medical Expertise + Lifestyle Comfort',
       description: 'Perfect blend of clinical competence and hospitality warmth for comprehensive care.'
     },

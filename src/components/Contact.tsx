@@ -1,18 +1,62 @@
 import React, { useState } from 'react';
-import { MapPin, Phone, Mail, Send } from 'lucide-react';
+import { MapPin, Phone, Mail, Send, CheckCircle, AlertCircle } from 'lucide-react';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
-    careNeeds: ''
+    subject: '',
+    message: ''
   });
+  const [loading, setLoading] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Handle form submission here
+    setLoading(true);
+    setSubmitStatus('idle');
+    setErrorMessage('');
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/contact-form/submit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          subject: formData.subject || 'General Inquiry',
+          message: formData.message
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSubmitStatus('success');
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          subject: '',
+          message: ''
+        });
+      } else {
+        setSubmitStatus('error');
+        setErrorMessage(data.message || 'Failed to submit form. Please try again.');
+      }
+    } catch (error) {
+      setSubmitStatus('error');
+      setErrorMessage('Network error. Please check your connection and try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -120,7 +164,7 @@ const Contact = () => {
               
               <div>
                 <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone Number *
+                  Phone Number
                 </label>
                 <input
                   type="tel"
@@ -128,33 +172,80 @@ const Contact = () => {
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  required
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                   placeholder="+918447639569"
                 />
               </div>
               
               <div>
-                <label htmlFor="careNeeds" className="block text-sm font-medium text-gray-700 mb-2">
-                  Care Needs & Requirements
+                <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
+                  Subject *
                 </label>
-                <textarea
-                  id="careNeeds"
-                  name="careNeeds"
-                  value={formData.careNeeds}
+                <input
+                  type="text"
+                  id="subject"
+                  name="subject"
+                  value={formData.subject}
                   onChange={handleChange}
-                  rows={4}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 resize-none"
-                  placeholder="Tell us about your specific care needs, preferred schedule, and any special requirements..."
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                  placeholder="What is this regarding?"
                 />
               </div>
               
+              <div>
+                <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                  Message *
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  required
+                  rows={4}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 resize-none"
+                  placeholder="Tell us about your inquiry, care needs, or any questions you have..."
+                />
+              </div>
+              
+              {/* Status Messages */}
+              {submitStatus === 'success' && (
+                <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <div>
+                    <p className="text-green-800 font-medium">Message sent successfully!</p>
+                    <p className="text-green-600 text-sm">We'll get back to you within 2 hours.</p>
+                  </div>
+                </div>
+              )}
+
+              {submitStatus === 'error' && (
+                <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-3">
+                  <AlertCircle className="w-5 h-5 text-red-600" />
+                  <div>
+                    <p className="text-red-800 font-medium">Failed to send message</p>
+                    <p className="text-red-600 text-sm">{errorMessage}</p>
+                  </div>
+                </div>
+              )}
+
               <button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center gap-2"
+                disabled={loading}
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center gap-2 disabled:transform-none"
               >
-                Send Message
-                <Send className="w-5 h-5" />
+                {loading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    Send Message
+                    <Send className="w-5 h-5" />
+                  </>
+                )}
               </button>
             </form>
           </div>
