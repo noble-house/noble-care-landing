@@ -18,7 +18,7 @@ const Auth = ({ onBack }: AuthProps) => {
     phone: '',
     password: '',
     confirmPassword: '',
-    userType: 'candidate' as 'candidate' | 'admin',
+    userType: 'candidate' as 'candidate',
     jobTitle: 'nurse' as 'nurse' | 'gda' | 'caretaker' | 'physiotherapist' | 'attendant'
   });
 
@@ -190,41 +190,31 @@ const Auth = ({ onBack }: AuthProps) => {
                 <label htmlFor="userType" className="block text-sm font-medium text-gray-700 mb-2">
                   I am a *
                 </label>
+                <div className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-700">
+                  Healthcare Professional / Candidate
+                </div>
+              </div>
+
+              {/* Job Title Field */}
+              <div>
+                <label htmlFor="jobTitle" className="block text-sm font-medium text-gray-700 mb-2">
+                  My Role is *
+                </label>
                 <select
-                  id="userType"
-                  name="userType"
-                  value={formData.userType}
+                  id="jobTitle"
+                  name="jobTitle"
+                  value={formData.jobTitle}
                   onChange={handleChange}
                   required={!isLogin}
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                 >
-                  <option value="candidate">Healthcare Professional / Candidate</option>
-                  <option value="admin">Admin / Manager</option>
+                  <option value="nurse">Nurse</option>
+                  <option value="gda">GDA (General Duty Assistant)</option>
+                  <option value="caretaker">Caretaker</option>
+                  <option value="physiotherapist">Physiotherapist</option>
+                  <option value="attendant">Attendant</option>
                 </select>
               </div>
-
-              {/* Job Title Field (only for candidates) */}
-              {formData.userType === 'candidate' && (
-                <div>
-                  <label htmlFor="jobTitle" className="block text-sm font-medium text-gray-700 mb-2">
-                    My Role is *
-                  </label>
-                  <select
-                    id="jobTitle"
-                    name="jobTitle"
-                    value={formData.jobTitle}
-                    onChange={handleChange}
-                    required={!isLogin}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                  >
-                    <option value="nurse">Nurse</option>
-                    <option value="gda">GDA (General Duty Assistant)</option>
-                    <option value="caretaker">Caretaker</option>
-                    <option value="physiotherapist">Physiotherapist</option>
-                    <option value="attendant">Attendant</option>
-                  </select>
-                </div>
-              )}
             </>
           )}
 
